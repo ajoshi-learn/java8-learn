@@ -24,15 +24,15 @@ Runnable r1 = () -> System.out.println("123");
 
 | Functional interface    | Function descriptor | Primitive specializations                                                                                                                                                   |
 |-------------------------|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Predicate<T>            | T -> boolean        | IntPredicate, LongPredicate, DoublePredicate                                                                                                                                |
-| Consumer<T>             | T -> void           | IntConsumer, LongConsumer, DoubleConsumer                                                                                                                                   |
-| Function<T, R>          | T -> R              | IntFunction, IntToDoubleFunction, IntToLongFunction, LongFunction, LongToDoubleFunction, LongToIntFunction, DoubleFunction, ToIntFunction, ToDoubleFunction, ToLongFunction |
-| Supplier<T>             | () -> T             | BooleanSupplier, IntSupplier, LongSupplier, DoubleSupplier                                                                                                                  |
-| UnaryOperator<T>        | T -> T              | IntUnaryOperator, LongUnaryOperator, DoubleUnaryOperator                                                                                                                    |
-| BinaryOperator<T>       | (T, T) -> T         | IntBinaryOperator, LongBinaryOperator, DoubleBinaryOperator                                                                                                                 |
-| BiPredicate<L, R>       | (L, R) -> boolean   |                                                                                                                                                                             |
-| BiConsumer<T, U>        | (T, U) -> void      | ObjIntConsumer, ObjLongConsumer, ObjDoubleConsumer                                                                                                                          |
-| BiFunction<T, U, R>     | (T, U) -> R         | ToIntBiFunction, ToLongBiFunction, ToDoubleBiFunction                                                                                                                       |
+| `Predicate<T>`            | T -> boolean        | IntPredicate, LongPredicate, DoublePredicate                                                                                                                                |
+| `Consumer<T>`             | T -> void           | IntConsumer, LongConsumer, DoubleConsumer                                                                                                                                   |
+| `Function<T, R>`          | T -> R              | IntFunction, IntToDoubleFunction, IntToLongFunction, LongFunction, LongToDoubleFunction, LongToIntFunction, DoubleFunction, ToIntFunction, ToDoubleFunction, ToLongFunction |
+| `Supplier<T>`             | () -> T             | BooleanSupplier, IntSupplier, LongSupplier, DoubleSupplier                                                                                                                  |
+| `UnaryOperator<T>`        | T -> T              | IntUnaryOperator, LongUnaryOperator, DoubleUnaryOperator                                                                                                                    |
+| `BinaryOperator<T>`       | (T, T) -> T         | IntBinaryOperator, LongBinaryOperator, DoubleBinaryOperator                                                                                                                 |
+| `BiPredicate<L, R>`       | (L, R) -> boolean   |                                                                                                                                                                             |
+| `BiConsumer<T, U>`        | (T, U) -> void      | ObjIntConsumer, ObjLongConsumer, ObjDoubleConsumer                                                                                                                          |
+| `BiFunction<T, U, R>`     | (T, U) -> R         | ToIntBiFunction, ToLongBiFunction, ToDoubleBiFunction                                                                                                                       |
 
 If you explore the new Java API, you’ll notice that functional interfaces are annotated with @FunctionalInterface. This annotation is used to indicate that the interface is intended to be a functional interface. The compiler will return a meaningful error if you define an interface using the @FunctionalInterface annotation and it isn’t a functional interface.
 
