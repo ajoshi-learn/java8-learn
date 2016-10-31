@@ -1,5 +1,25 @@
 # Java 8 notes
 
+Table of Contents
+
+* [Java 8 notes](#java-8-notes)
+  * [Lambda expressions](#lambda-expressions)
+     * [Functional interface](#functional-interface)
+        * [Common functional interfaces in Java 8](#common-functional-interfaces-in-java-8)
+        * [Predicate](#predicate)
+        * [Consumer](#consumer)
+        * [Function](#function)
+     * [Type checking, type interface and restrictions](#type-checking-type-interface-and-restrictions)
+        * [Type interface](#type-interface)
+        * [Using local variables](#using-local-variables)
+     * [Method references](#method-references)
+        * [Constructor references](#constructor-references)
+     * [Useful methods to compose lambda expressions](#useful-methods-to-compose-lambda-expressions)
+        * [Reversed order](#reversed-order)
+        * [Chaining comparators](#chaining-comparators)
+        * [Composing predicates](#composing-predicates)
+        * [Composing functions](#composing-functions)
+
 ## Lambda expressions
 
 A _lambda expression_ can be understood as a concise representation of an anonymous function that can be passed around: it doesn’t have a name, but it has a list of parameters, a body, a return type, and also possibly a list of exceptions that can be thrown.
