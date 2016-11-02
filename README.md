@@ -200,3 +200,243 @@ Function<String, String> addHeader = Letter::addHeader;
 Function<String, String> transformationPipeline = addHeader.andThen(Letter::checkSpelling)
     .andThen(Letter::addFooter);
 ```
+
+## Streams
+
+Collections in Java 8 support a new stream method that returns a stream (the interface definition is available in java.util.stream.Stream).
+
+Example:
+
+```
+List<String> threeHighCaloricDishes = DishRepository.dishesList()
+                .stream()
+                .filter(dish -> dish.getCalories() > 300)
+                .limit(3)
+                .map(Dish::getName)
+                .collect(Collectors.toList());
+```
+
+![alt tag](readmeImgs/menuStream.png)
+
+* filter — Takes a lambda to exclude certain elements from the stream. In this case, you select dishes
+that have more than 300 calories by passing the lambda `d -> d.getCalories() > 300`. 
+* map — Takes a lambda to transform an element into another one or to extract information. In this case, you extract the name for each dish by passing the method reference Dish::getName, which is equivalent to the lambda `d -> d.getName()`.
+* limit — Truncates a stream to contain no more than a given number of elements.
+* collect — Converts a stream into another form. In this case you convert the stream into a list.
+
+### Stream properties
+
+#### Traversable only once
+
+```
+Stream<String> menuStream = DishRepository.dishesList().stream().map(Dish::getName);
+menuStream.forEach(System.out::println);
+menuStream.forEach(System.out::println);
+```
+
+`java.lang.IllegalStateException` - stream has already been operated upon or closed
+
+#### Internal iteration
+
+![alt tag](readmeImgs/internalIteration.png)
+
+### Stream operations
+
+Stream operations that can be connected are called _intermediate operations_, and operations that close a stream are called _terminal operations_.
+
+| Operation | Type         | ReturnType | Argument      | Function descriptor |
+|-----------|--------------|------------|---------------|---------------------|
+| filter    | Intermediate | Stream<T>  | Predicate<T>  | T -> boolean        |
+| map       | Intermediate | Stream<R>  | Function<T,R> | T -> R              |
+| limit     | Intermediate | Stream<T>  |               |                     |
+| sorted    | Intermediate | Stream<T>  | Comparator<T> | (T, T) -> int       |
+| distinct  | Intermediate | Stream<T>  |               |                     |
+
+| Operation | Type     | Purpose                                                                                |
+|-----------|----------|----------------------------------------------------------------------------------------|
+| forEach   | Terminal | Consumes each element from a stream and applies a lambda to each of them. Returns void |
+| count     | Terminal | Returns the number of elements in a stream. The operation returns a long               |
+| collect   | Terminal | Reduces the stream to create a collection such as a List, a Map, or Integer            |
+
+#### Filtering and slicing
+
+##### Filtering with a predicate
+
+```
+DishRepository.dishesList().stream()
+                .filter(Dish::isVegetarian)
+                .collect(Collectors.toList());
+```
+
+##### Filtering unique elements
+
+```
+List<Integer> list = Arrays.asList(1,2,2,3,4,4,5,6,7);
+list.stream().filter(i -> i % 2 == 0).distinct();
+```
+
+##### Truncating a stream
+
+```
+List<Integer> list = Arrays.asList(1,2,2,3,4,4,5,6,7);
+list.stream().filter(i -> i % 2 == 0).limit(3);
+```
+
+##### Skipping elements
+
+```
+List<Integer> list = Arrays.asList(1,2,2,3,4,4,5,6,7);
+list.stream().filter(i -> i % 2 == 0).skip(3);
+```
+
+#### Mapping
+
+```
+List<String> threeHighCaloricDishes = DishRepository.dishesList()
+    .stream()
+    .map(Dish::getName)
+    .collect(Collectors.toList());
+```
+
+##### Using flatMap
+
+```
+List<String> words = Arrays.asList("Java8", "Lambdas", "In");
+words.stream()
+        .map(word -> word.split(""))
+        .flatMap(Arrays::stream)
+        .distinct()
+        .collect(toList());
+```
+
+```
+List evens = Arrays.asList(2, 4, 6);
+List odds = Arrays.asList(3, 5, 7);
+List primes = Arrays.asList(2, 3, 5, 7, 11);
+List numbers = Stream.of(evens, odds, primes)
+    .flatMap(List::stream)
+    .collect(Collectors.toList());
+
+Read more: http://javarevisited.blogspot.com/2016/03/difference-between-map-and-flatmap-in-java8.html#ixzz4Os8FiEyX
+```
+
+#### Finding and matching
+
+##### If a predicate matches at least one element
+
+```
+menu.stream().anyMatch(Dish::isVegetarian)
+```
+
+##### If a predicate matches all elements
+
+```
+menu.stream().allMatch(d -> d.getCalories() < 1000);
+```
+
+##### noneMatch
+
+```
+menu.stream().noneMatch(d -> d.getCalories() >= 1000);
+```
+
+#### Finding an element
+
+```
+Optional<Dish> dish = menu.stream()
+                        .filter(Dish::isVegetarian)
+                        .findAny();
+```
+
+#### Finding the first element
+
+```
+List<Integer> someNumbers = Arrays.asList(1, 2, 3, 4, 5);
+Optional<Integer> firstSquareDivisibleByThree =
+someNumbers.stream()
+.map(x -> x * x)
+.filter(x -> x % 3 == 0)
+.findFirst(); // 9
+```
+
+#### Reducing
+
+![alt tag](readmeImgs/reducing.png)
+
+##### No initial value
+
+There’s also an overloaded variant of reduce that doesn't take an initial value, but it returns an `Optional` object:
+
+```
+Optional<Integer> sum = numbers.stream().reduce((a, b) -> (a + b));
+```
+
+| Operation | Type         | Return type | Type/Functional interface used |
+|-----------|--------------|-------------|--------------------------------|
+| filter    | Intermediate | Stream<T>   | Predicate<T>                   |
+| distinct  | Intermediate | Stream<T>   |                                |
+| skip      | Intermediate | Stream<T>   | long                           |
+| limit     | Intermediate | Stream<T>   | long                           |
+| map       | Intermediate | Stream<R>   | Function<T,R>                  |
+| flatMap   | Intermediate | Stream<R>   | Function<T,Stream<R>>          |
+| sorted    | Intermediate | Stream<T>   | Comparator<T>                  |
+| anyMatch  | Terminal     | boolean     | Predicate<T>                   |
+| noneMatch | Terminal     | boolean     | Predicate<T>                   |
+| allMatch  | Terminal     | boolean     | Predicate<T>                   |
+| findAny   | Terminal     | Optional<T> |                                |
+| findFirst | Terminal     | Optional<T> |                                |
+| forEach   | Terminal     | void        | Consumer<T>                    |
+| collect   | Terminal     | R           | Collector<T,A,R>               |
+| reduce    | Terminal     | Optional<T> | BinaryOperator<T>              |
+| count     | Terminal     | long        |                                |
+
+#### Numeric streams
+
+```
+int calories = menu.stream()
+                    .map(Dish::getCalories)
+                    .sum();
+```
+
+##### Numeric ranges
+
+```
+IntStream.rangeClosed(1, 100);
+```
+
+```
+IntStream.rangeClosed(1, 100)
+    .filter(b -> Math.sqrt(a*a + b*b) % 1 == 0)
+    .boxed()
+    .map(b -> new int[]{a, b, (int) Math.sqrt(a * a + b * b)});
+```
+
+#### Building streams
+
+```
+Stream<String> stream = Stream.of("Java 8 ", "Lambdas ", "In ", "Action");
+```
+
+```
+int[] numbers = {1,2,3,4};
+int sum = Arrays.stream(numbers).sum();
+```
+
+```
+Stream.iterate(0, n -> n + 2)
+        .limit(10)
+        .forEach(System.out::println);
+```
+
+```
+Stream.iterate(new int[]{0, 1},
+    t -> new int[]{t[1], t[0]+t[1]})
+    .limit(20)
+    .forEach(t -> System.out.println("(" + t[0] + "," + t[1] +")"));
+```
+
+```
+Stream.generate(Math::random)
+    .limit(5)
+    .forEach(System.out::println);
+```
