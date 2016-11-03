@@ -42,6 +42,14 @@ Table of Contents
         * [Numeric streams](#numeric-streams)
            * [Numeric ranges](#numeric-ranges)
         * [Building streams](#building-streams)
+     * [Collecting data with streams](#collecting-data-with-streams)
+        * [Max and min](#max-and-min)
+        * [Summarization](#summarization)
+        * [Joining strings](#joining-strings)
+        * [Generalized summarization with reduction](#generalized-summarization-with-reduction)
+     * [Grouping](#grouping)
+        * [Multilevel grouping](#multilevel-grouping)
+     * [Partitioning](#partitioning)
 
 ## Lambda expressions
 
@@ -462,4 +470,88 @@ Stream.iterate(new int[]{0, 1},
 Stream.generate(Math::random)
     .limit(5)
     .forEach(System.out::println);
+```
+
+### Collecting data with streams
+
+#### Max and min
+```
+TraderTransactionRepository.transactions()
+    .stream()
+    .collect(maxBy(Comparator.comparing(Transaction::getValue)));
+```
+
+#### Summarization
+```
+TraderTransactionRepository.transactions()
+    .stream()
+    .collect(summarizingInt(Transaction::getValue));
+```
+
+#### Joining strings
+```
+String shortMenu = menu.stream().map(Dish::getName).collect(joining(", "));
+```
+
+#### Generalized summarization with reduction
+```
+TraderTransactionRepository.transactions()
+    .stream()
+    .collect(reducing(0, Transaction::getValue, Integer::sum));
+```
+
+### Grouping
+```
+Map<String, List<Trader>> collect = TraderTransactionRepository.traders()
+    .stream()
+    .collect(groupingBy(Trader::getCity));
+```
+
+#### Multilevel grouping
+```
+Map<String, Map<String, List<Trader>>> collect = TraderTransactionRepository.traders()
+    .stream()
+    .collect(groupingBy(Trader::getCity, groupingBy(Trader::getName)));
+```
+
+```
+TraderTransactionRepository.traders()
+    .stream()
+    .collect(groupingBy(Trader::getCity, counting()));
+```
+
+```
+Map<Dish.Type, Optional<Dish>> mostCaloricByType = menu.stream()
+    .collect(groupingBy(Dish::getType,
+    maxBy(comparingInt(Dish::getCalories))));
+```
+
+Transforming `Optional`:
+```
+TraderTransactionRepository.traders()
+    .stream()
+    .collect(groupingBy(Trader::getCity,
+            collectingAndThen(maxBy(comparingInt(trader -> trader.getCity().length())), Optional::get)));
+```
+
+### Partitioning
+
+Partitioning is a special case of grouping: having a predicate (a function returning a boolean), called a partitioning function, as a classification function.
+
+```
+TraderTransactionRepository.traders()
+    .stream()
+    .collect(partitioningBy(trader -> trader.getCity().equals("NY")));
+```
+
+```
+DishRepository.dishesList()
+    .stream()
+    .collect(partitioningBy(Dish::isVegetarian, groupingBy(Dish::getType)));
+```
+
+```
+DishRepository.dishesList()
+    .stream()
+    .collect(partitioningBy(Dish::isVegetarian, collectingAndThen(maxBy(comparingInt(Dish::getCalories)), Optional::get)));
 ```
