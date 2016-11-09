@@ -555,3 +555,23 @@ DishRepository.dishesList()
     .stream()
     .collect(partitioningBy(Dish::isVegetarian, collectingAndThen(maxBy(comparingInt(Dish::getCalories)), Optional::get)));
 ```
+
+## Parallel data processing and performance
+
+```
+Stream.iterate(1L, t -> t + 1)
+    .limit(n)
+    .parallel()
+    .reduce(0L, Long::sum);
+```
+
+![alt tag](readmeImgs/parallelOperation.png)
+
+| Source          | Decomposability |
+|-----------------|-----------------|
+| ArrayList       | Excelent        |
+| LinkedList      | Poor            |
+| IntStream.range | Excellent        |
+| Stream.iterate  | Poor            |
+| HashSet         | Good            |
+| TreeSet         | Good            |
